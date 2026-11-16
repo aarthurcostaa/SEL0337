@@ -1,0 +1,27 @@
+# Prática 5 - Checkpoint 1
+# Serviço para iniciar o blink em Python no boot
+
+[Unit]
+Description=Pratica 5 - Blink LED em Python
+After=multi-user.target
+
+[Service]
+Type=simple
+
+# Usuario responsavel pela execucao
+User=sel
+
+# Diretorio que contem os arquivos
+WorkingDirectory=/home/sel/sel0337_arthur_franco/pratica5
+
+# Inicia a aplicacao Python
+ExecStart=/usr/bin/python3 /home/sel/sel0337_arthur_franco/pratica5/blink_.py
+
+# Executa o script de registro ao parar o servico
+ExecStop=/home/sel/sel0337_arthur_franco/pratica5/blinkoff.sh
+
+# Define a politica de reinicializacao em caso de falha
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
