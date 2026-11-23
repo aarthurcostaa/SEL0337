@@ -1,0 +1,43 @@
+cd yolo_raspicam
+mkdir build && cd build
+cmake ..
+make -j2
+
+# 1) teste o modelo numa foto (gera resultado.jpg e imprime o JSON)
+./yolo_raspicam --model ../model_ncnn_model --image ../teste.jpg
+
+# 2) tempo real com a raspicam
+./yolo_raspicam --model ../model_ncnn_model
+
+rpicam-hello --list-cameras        # nos sistemas antigos: libcamera-hello --list-cameras
+
+sudo apt update
+# obrigatórios
+sudo apt install -y build-essential cmake git pkg-config \
+    libgstreamer1.0-dev gstreamer1.0-libcamera gstreamer1.0-plugins-base
+# opcionais: gravação, stream, modo foto, webcam USB e gst-launch para testes
+sudo apt install -y gstreamer1.0-plugins-good gstreamer1.0-tools
+
+gst-launch-1.0 libcamerasrc ! video/x-raw,width=640,height=480 ! videoconvert ! fakesink -v
+
+cd ~
+git clone --depth 1 https://github.com/Tencent/ncnn.git
+cd ncnn && mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DNCNN_VULKAN=OFF \
+      -DNCNN_BUILD_EXAMPLES=OFF -DNCNN_BUILD_TOOLS=OFF \
+      -DNCNN_BUILD_BENCHMARK=OFF -DNCNN_BUILD_TESTS=OFF ..
+make -j2          # -j2 (ou -j1) para não estourar o 1 GB de RAM da Pi 3
+sudo make install
+
+cd yolo_raspicam
+mkdir build && cd build
+cmake ..
+make -j2
+
+# 1) teste o modelo numa foto (gera resultado.jpg e imprime o JSON)
+./yolo_raspicam --model ../model_ncnn_model --image ../teste.jpg
+
+# 2) tempo real com a raspicam
+./yolo_raspicam --model ../model_ncnn_model
